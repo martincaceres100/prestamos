@@ -46,8 +46,9 @@ st.subheader("📅 Cronograma de Pagos")
 
 calendario = []
 for i in range(int(cuotas)):
-    # Calculamos la fecha de cada cuota (sumando 30 días aprox. por mes)
-    fecha_cuota = fecha_inicio + timedelta(days=i*30)
+    # Sumamos (i + 1) * 30 para que la primera cuota (i=0) sea dentro de 30 días
+    dias_a_sumar = (i + 1) * 30
+    fecha_cuota = fecha_inicio + timedelta(days=dias_a_sumar)
     
     calendario.append({
         "N° Cuota": i + 1,
@@ -67,4 +68,5 @@ st.info("💡 Próximo paso: Conectar con Base de Datos para guardar estos regis
 
 if st.button("📱 Simular Aviso por WhatsApp"):
     st.success(f"Mensaje preparado para {nombre}: '{mensaje_wsp}'")
+
 
