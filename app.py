@@ -15,7 +15,7 @@ with st.sidebar:
     monto = st.number_input("Monto a entregar ($)", min_value=0, value=1000000, step=50000)
     tasa = st.number_input("Tasa de Interés Mensual (%)", min_value=0.0, value=10.0, step=0.5)
     cuotas = st.number_input("Cantidad de Cuotas (Meses)", min_value=1, value=6, step=1)
-    fecha_inicio = st.date_input("Fecha del primer pago", datetime.now())
+    fecha_inicio = st.date_input("Fecha del primer pago", datetime.now(), format="DD/MM/YYYY")
 
 # --- CÁLCULOS ---
 # Usamos Interés Fijo (Simple) que es el estándar para préstamos rápidos
@@ -67,3 +67,4 @@ st.info("💡 Próximo paso: Conectar con Base de Datos para guardar estos regis
 
 if st.button("📱 Simular Aviso por WhatsApp"):
     st.success(f"Mensaje preparado para {nombre}: '{mensaje_wsp}'")
+
