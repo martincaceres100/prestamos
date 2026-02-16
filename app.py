@@ -28,25 +28,24 @@ interes_total = monto * (tasa / 100) * cuotas
 monto_total = monto + interes_total
 valor_cuota = monto_total / cuotas
 
-# --- RESULTADOS PRINCIPALES (Organizados en bloques para evitar cortes) ---
+# --- RESULTADOS PRINCIPALES ---
 st.subheader(f"👤 Resumen para: {nombre}")
 
-# BLOQUE 1: Datos de entrega y plazos
+# BLOQUE 1: Detalle de Entrega (Solo el monto principal)
 st.markdown("#### 📥 Detalles de Entrega")
-col_a, col_b = st.columns(2)
-with col_a:
-    st.metric("Monto Entregado", formato_moneda(monto))
-with col_b:
-    st.metric("Cuotas Totales", f"{int(cuotas)} meses")
+st.metric("Monto Entregado", formato_moneda(monto))
 
-# BLOQUE 2: Datos de cobro y ganancia
+# BLOQUE 2: Detalles de Cobro (Toda la info del retorno)
 st.markdown("#### 📤 Detalles de Cobro")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
+
 with col1:
-    st.metric("Cuota Mensual", formato_moneda(valor_cuota))
+    st.metric("Cuotas Totales", f"{int(cuotas)} cuotas")
 with col2:
-    st.metric("Total a Devolver", formato_moneda(monto_total))
+    st.metric("Cuota Mensual", formato_moneda(valor_cuota))
 with col3:
+    st.metric("Total a Devolver", formato_moneda(monto_total))
+with col4:
     st.metric("Tu Ganancia", formato_moneda(interes_total), delta=f"{tasa}% mensual")
 
 st.markdown("---")
@@ -65,7 +64,6 @@ for i in range(int(cuotas)):
         "Monto Cuota": formato_moneda(valor_cuota)
     })
 
-# Usamos st.table para que se vea estático y profesional
 st.table(calendario)
 
 # --- BOTÓN DE WHATSAPP ---
@@ -74,6 +72,7 @@ mensaje_url = f"Hola {nombre}, te envío el cronograma de tu préstamo de {forma
 link_wsp = f"https://wa.me/{telefono}?text={mensaje_url.replace(' ', '%20')}"
 
 st.link_button("📱 Enviar Plan por WhatsApp", link_wsp, use_container_width=True)
+
 
 
 
