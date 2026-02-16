@@ -12,7 +12,7 @@ def formato_moneda(valor):
 st.title("💰 Simulador de Préstamos Profesional")
 st.markdown("---")
 
-# --- BARRA LATERAL (Solo entradas de datos) ---
+# --- BARRA LATERAL (Entradas de datos) ---
 with st.sidebar:
     st.header("📋 Datos del Préstamo")
     nombre = st.text_input("Nombre del Cliente", "Juan Pérez")
@@ -27,15 +27,6 @@ with st.sidebar:
 interes_total = monto * (tasa / 100) * cuotas
 monto_total = monto + interes_total
 valor_cuota = monto_total / cuotas
-
-# --- CONTROL DE VISTA (Discreto y fuera del sidebar) ---
-# Ponemos el switch justo antes de los resultados
-col_switch, _ = st.columns([1, 3])
-with col_switch:
-    # Por defecto está desactivado (False) para que tú veas todo al cargar
-    vista_cliente = st.toggle("Vista simplificada", value=False)
-
-st.markdown("---")
 
 # --- RESULTADOS PRINCIPALES ---
 st.subheader(f"👤 Resumen para: {nombre}")
@@ -54,15 +45,21 @@ with col1:
 with col2:
     st.metric("Cuota Mensual", formato_moneda(valor_cuota))
 
-# Fila 2: Solo si NO está activada la vista cliente (Modo Prestamista)
+# --- MECANISMO DE VISTA (Ubicado estratégicamente) ---
+st.markdown("---")
+col_check, _ = st.columns([1, 2])
+with col_check:
+    # El interruptor se encuentra después de los primeros datos y antes de los privados/cronograma
+    vista_cliente = st.toggle("Vista simplificada", value=False)
+
+# Fila 2: Datos Sensibles (Solo se ven si vista_cliente es False)
 if not vista_cliente:
     col3, col4 = st.columns(2)
     with col3:
         st.metric("Total a Devolver", formato_moneda(monto_total))
     with col4:
         st.metric("Rendimiento Final", formato_moneda(interes_total), delta=f"{tasa}% mensual")
-
-st.markdown("---")
+    st.markdown("---")
 
 # --- TABLA DE PAGOS ---
 st.subheader("📅 Cronograma de Pagos")
@@ -85,6 +82,7 @@ mensaje_url = f"Hola {nombre}, te envío el cronograma de tu préstamo de {forma
 link_wsp = f"https://wa.me/{telefono}?text={mensaje_url.replace(' ', '%20')}"
 
 st.link_button("📱 Enviar Plan por WhatsApp", link_wsp, use_container_width=True)
+
 
 
 
