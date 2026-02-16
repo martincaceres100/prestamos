@@ -12,7 +12,7 @@ def formato_moneda(valor):
 st.title("💰 Simulador de Préstamos Profesional")
 st.markdown("---")
 
-# --- BARRA LATERAL (Entradas de datos) ---
+# --- BARRA LATERAL ---
 with st.sidebar:
     st.header("📋 Datos del Préstamo")
     nombre = st.text_input("Nombre del Cliente", "Juan Pérez")
@@ -31,7 +31,7 @@ valor_cuota = monto_total / cuotas
 # --- RESULTADOS PRINCIPALES ---
 st.subheader(f"👤 Resumen para: {nombre}")
 
-# BLOQUE 1: Detalle de Entrega
+# BLOQUE 1: Detalle de Entrega (Siempre visible)
 st.markdown("#### 📥 Detalles de Entrega")
 st.metric("Monto Entregado", formato_moneda(monto))
 
@@ -45,21 +45,24 @@ with col1:
 with col2:
     st.metric("Cuota Mensual", formato_moneda(valor_cuota))
 
-# --- MECANISMO DE VISTA (Ubicado estratégicamente) ---
+# Contenedor para los datos que se pueden ocultar
+placeholder_privado = st.container()
+
+# --- INTERRUPTOR DE VISTA (Debajo de los resultados, antes del calendario) ---
 st.markdown("---")
 col_check, _ = st.columns([1, 2])
 with col_check:
-    # El interruptor se encuentra después de los primeros datos y antes de los privados/cronograma
+    # value=False para que por defecto se vea TODO
     vista_cliente = st.toggle("Vista simplificada", value=False)
 
-# Fila 2: Datos Sensibles (Solo se ven si vista_cliente es False)
-if not vista_cliente:
-    col3, col4 = st.columns(2)
-    with col3:
-        st.metric("Total a Devolver", formato_moneda(monto_total))
-    with col4:
-        st.metric("Rendimiento Final", formato_moneda(interes_total), delta=f"{tasa}% mensual")
-    st.markdown("---")
+# Lógica del contenedor privado
+with placeholder_privado:
+    if not vista_cliente:
+        col3, col4 = st.columns(2)
+        with col3:
+            st.metric("Total a Devolver", formato_moneda(monto_total))
+        with col4:
+            st.metric("Rendimiento Final", formato_moneda(interes_total), delta=f"{tasa}% mensual")
 
 # --- TABLA DE PAGOS ---
 st.subheader("📅 Cronograma de Pagos")
@@ -82,6 +85,7 @@ mensaje_url = f"Hola {nombre}, te envío el cronograma de tu préstamo de {forma
 link_wsp = f"https://wa.me/{telefono}?text={mensaje_url.replace(' ', '%20')}"
 
 st.link_button("📱 Enviar Plan por WhatsApp", link_wsp, use_container_width=True)
+
 
 
 
