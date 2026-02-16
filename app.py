@@ -31,38 +31,43 @@ valor_cuota = monto_total / cuotas
 # --- RESULTADOS PRINCIPALES ---
 st.subheader(f"👤 Resumen para: {nombre}")
 
-# BLOQUE 1: Detalle de Entrega (Siempre visible)
+# BLOQUE 1: Detalle de Entrega
 st.markdown("#### 📥 Detalles de Entrega")
 st.metric("Monto Entregado", formato_moneda(monto))
 
 # BLOQUE 2: Detalles de Cobro
 st.markdown("#### 📤 Detalles de Cobro")
 
-# Fila 1: Siempre visible
+# Fila 1: Siempre visible (Cuotas y Monto Mensual)
 col1, col2 = st.columns(2)
 with col1:
     st.metric("Cuotas Totales", f"{int(cuotas)} cuotas")
 with col2:
     st.metric("Cuota Mensual", formato_moneda(valor_cuota))
 
-# Contenedor para los datos que se pueden ocultar
+# Contenedor para los datos privados
 placeholder_privado = st.container()
 
-# --- INTERRUPTOR DE VISTA (Debajo de los resultados, antes del calendario) ---
-st.markdown("---")
+# Lógica de los datos que se pueden ocultar
+with placeholder_privado:
+    # Definimos 'vista_cliente' aquí abajo pero la lógica depende del toggle posterior
+    # Para que funcione correctamente en Streamlit, usamos el valor del toggle
+    pass 
+
+# --- INTERRUPTOR DE VISTA (Justo arriba de la línea divisoria) ---
 col_check, _ = st.columns([1, 2])
 with col_check:
-    # value=False para que por defecto se vea TODO
     vista_cliente = st.toggle("Vista simplificada", value=False)
 
-# Lógica del contenedor privado
-with placeholder_privado:
-    if not vista_cliente:
-        col3, col4 = st.columns(2)
-        with col3:
-            st.metric("Total a Devolver", formato_moneda(monto_total))
-        with col4:
-            st.metric("Rendimiento Final", formato_moneda(interes_total), delta=f"{tasa}% mensual")
+# Si el toggle está en OFF, mostramos los datos privados antes de la línea
+if not vista_cliente:
+    col3, col4 = st.columns(2)
+    with col3:
+        st.metric("Total a Devolver", formato_moneda(monto_total))
+    with col4:
+        st.metric("Rendimiento Final", formato_moneda(interes_total), delta=f"{tasa}% mensual")
+
+st.markdown("---") # Esta es la línea que separa al cronograma
 
 # --- TABLA DE PAGOS ---
 st.subheader("📅 Cronograma de Pagos")
