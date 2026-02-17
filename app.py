@@ -59,13 +59,15 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
     st.markdown("---")
     st.subheader(f"📊 Resultados para {nombre}")
     
+    # Fila de métricas principales
     col_a, col_b = st.columns(2)
     col_a.metric("Monto Entregado", formato_moneda(monto))
     col_b.metric("Cuotas Totales", f"{int(cuotas)} cuotas")
     
-    # Bloque de Cuota Mensual y Fecha Final integrados
-    st.metric("Cuota Mensual", formato_moneda(valor_cuota))
-    st.markdown(f"🗓️ **Última cuota:** {fecha_ultima_cuota.strftime('%d/%m/%Y')}")
+    # Nueva fila de métricas con el mismo formato solicitado
+    col_c, col_d = st.columns(2)
+    col_c.metric("Cuota Mensual", formato_moneda(valor_cuota))
+    col_d.metric("Última cuota", fecha_ultima_cuota.strftime('%d/%m/%Y'))
 
     st.markdown("---")
 
@@ -102,4 +104,3 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
             url_confirmar = f"https://wa.me/{tel_destino}?text={mensaje_confirmacion.replace(' ', '%20').replace('\n', '%0A')}"
             st.link_button("📱 Avisar Confirmación", url_confirmar)
 
-# Las demás secciones permanecen igual...
