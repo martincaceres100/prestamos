@@ -63,9 +63,13 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
     col_a.metric("Monto Entregado", formato_moneda(monto))
     col_b.metric("Cuotas Totales", f"{int(cuotas)} cuotas")
     
+    # Bloque de Cuota Mensual y Fecha Final integrados
     st.metric("Cuota Mensual", formato_moneda(valor_cuota))
+    st.markdown(f"🗓️ **Última cuota:** {fecha_ultima_cuota.strftime('%d/%m/%Y')}")
 
-    # --- AQUÍ LA LÓGICA DEL INTERRUPTOR CORREGIDA ---
+    st.markdown("---")
+
+    # --- LÓGICA DEL INTERRUPTOR ---
     vista_simplificada = st.toggle("Vista simplificada (Ocultar datos de cierre)", value=False)
     
     if not vista_simplificada:
@@ -73,8 +77,6 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
         c_p1, c_p2 = st.columns(2)
         c_p1.metric("Total a Devolver", formato_moneda(monto_total))
         c_p2.metric("Rendimiento Final", formato_moneda(interes_total), delta=f"{tasa}% mensual")
-
-    st.info(f"📅 **El préstamo finalizaría el:** {fecha_ultima_cuota.strftime('%d/%m/%Y')}")
 
     st.markdown("---")
     
@@ -87,7 +89,7 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
             f"Hola {nombre}, esta es la propuesta de tu préstamo:\n\n"
             f"💰 *Monto:* {formato_moneda(monto)}\n"
             f"🗓️ *Plan:* {int(cuotas)} cuotas de {formato_moneda(valor_cuota)}\n"
-            f"🏁 *Finaliza:* {fecha_ultima_cuota.strftime('%d/%m/%Y')}\n\n"
+            f"🏁 *Última cuota:* {fecha_ultima_cuota.strftime('%d/%m/%Y')}\n\n"
             "¿Te interesa para que lo demos de alta?"
         )
         url_propuesta = f"https://wa.me/{tel_destino}?text={mensaje_propuesta.replace(' ', '%20').replace('\n', '%0A')}"
@@ -100,5 +102,4 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
             url_confirmar = f"https://wa.me/{tel_destino}?text={mensaje_confirmacion.replace(' ', '%20').replace('\n', '%0A')}"
             st.link_button("📱 Avisar Confirmación", url_confirmar)
 
-# (Resto de secciones se mantienen igual...)
-
+# Las demás secciones permanecen igual...
