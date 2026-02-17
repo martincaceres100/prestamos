@@ -21,8 +21,9 @@ def formato_moneda(valor):
     return f"$ {valor:,.0f}".replace(",", ".")
 
 def limpiar_telefono(num):
-    # Deja solo los números para que el link de WhatsApp no falle
-    return "".join(filter(str.isdigit, num))
+    # Elimina absolutamente todo lo que no sea un número (quita +, espacios, guiones)
+    solo_numeros = "".join(filter(str.isdigit, num))
+    return solo_numeros
 
 # 4. MENÚ DE NAVEGACIÓN
 seccion = st.selectbox("📍 Ir a:", ["🚀 Nuevo Préstamo (Simulador)", "📅 Agenda de Cobros", "👤 Clientes y Préstamos"])
@@ -131,5 +132,6 @@ elif seccion == "👤 Clientes y Préstamos":
     st.header("Historial de Clientes")
     buscar_cliente = st.text_input("🔍 Buscar cliente por nombre...")
     st.info("Próximamente: Podrás ver el historial completo de cada cliente aquí.")
+
 
 
