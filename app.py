@@ -1,10 +1,10 @@
 import streamlit as st
 from datetime import datetime, timedelta
 
-# Configuración de la página
+# 1. CONFIGURACIÓN DE LA PÁGINA
 st.set_page_config(page_title="Gestión de Préstamos", page_icon="💰", layout="wide")
 
-# --- ESTILOS CSS PARA MEJORAR LA VISTA EN CELULAR ---
+# 2. ESTILOS CSS PARA MEJORAR LA VISTA EN CELULAR
 st.markdown("""
     <style>
         .stApp label { font-size: 1.2rem !important; font-weight: bold !important; }
@@ -16,14 +16,15 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- FUNCIONES DE APOYO ---
+# 3. FUNCIONES DE APOYO
 def formato_moneda(valor):
     return f"$ {valor:,.0f}".replace(",", ".")
 
 def limpiar_telefono(num):
+    # Deja solo los números para que el link de WhatsApp no falle
     return "".join(filter(str.isdigit, num))
 
-# --- MENÚ DE NAVEGACIÓN ---
+# 4. MENÚ DE NAVEGACIÓN
 seccion = st.selectbox("📍 Ir a:", ["🚀 Nuevo Préstamo (Simulador)", "📅 Agenda de Cobros", "👤 Clientes y Préstamos"])
 st.markdown("---")
 
@@ -35,6 +36,7 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
     
     with st.container():
         nombre = st.text_input("Nombre del Cliente", "Juan Pérez")
+        # Teléfono preconfigurado con tu prefijo solicitado
         telefono_raw = st.text_input("Celular (prefijo automático)", "+54 9 351 ")
         
         c1, c2 = st.columns(2)
@@ -48,30 +50,32 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
         with c3:
             cuotas = st.number_input("Cuotas", min_value=1, value=6, step=1)
         with c4:
+            # Formato de fecha DD/MM/YYYY
             fecha_prestamo = st.date_input("Fecha del préstamo", datetime.now(), format="DD/MM/YYYY")
 
     # CÁLCULOS
     interes_total = monto * (tasa / 100) * cuotas
     monto_total = monto + interes_total
     valor_cuota = monto_total / cuotas
+    # Cálculo de fecha final (estimado 30 días por cuota)
     fecha_ultima_cuota = fecha_prestamo + timedelta(days=int(cuotas) * 30)
 
     st.markdown("---")
     st.subheader(f"📊 Resultados para {nombre}")
     
-    # Fila de métricas principales
+    # Primera fila de métricas
     col_a, col_b = st.columns(2)
     col_a.metric("Monto Entregado", formato_moneda(monto))
     col_b.metric("Cuotas Totales", f"{int(cuotas)} cuotas")
     
-    # Nueva fila de métricas con el mismo formato solicitado
+    # Segunda fila: Cuota y Fecha Final con el mismo formato visual
     col_c, col_d = st.columns(2)
     col_c.metric("Cuota Mensual", formato_moneda(valor_cuota))
     col_d.metric("Última cuota", fecha_ultima_cuota.strftime('%d/%m/%Y'))
 
     st.markdown("---")
 
-    # --- LÓGICA DEL INTERRUPTOR ---
+    # --- LÓGICA DEL INTERRUPTOR DE VISTA ---
     vista_simplificada = st.toggle("Vista simplificada (Ocultar datos de cierre)", value=False)
     
     if not vista_simplificada:
@@ -87,8 +91,9 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
     col_btn1, col_btn2 = st.columns(2)
     
     with col_btn1:
+        # BOTÓN A: Enviar Propuesta (Sin registrar)
         mensaje_propuesta = (
-            f"Hola {nombre}, esta es la propuesta de tu préstamo:\n\n"
+            f"Hola *{nombre}*, esta es la propuesta de tu préstamo:\n\n"
             f"💰 *Monto:* {formato_moneda(monto)}\n"
             f"🗓️ *Plan:* {int(cuotas)} cuotas de {formato_moneda(valor_cuota)}\n"
             f"🏁 *Última cuota:* {fecha_ultima_cuota.strftime('%d/%m/%Y')}\n\n"
@@ -98,9 +103,33 @@ if seccion == "🚀 Nuevo Préstamo (Simulador)":
         st.link_button("📤 Enviar Propuesta", url_propuesta)
 
     with col_btn2:
+        # BOTÓN B: Confirmar y Registrar
         if st.button("✅ Confirmar y Registrar"):
-            st.success(f"Préstamo de {nombre} registrado exitosamente.")
-            mensaje_confirmacion = f"✅ *¡Préstamo Confirmado!*\n\nHola {nombre}, ya dimos de alta tu préstamo de {formato_moneda(monto)}."
+            # Aquí se activará la base de datos más adelante
+            st.success(f"Préstamo de {nombre} registrado exitosamente en el sistema.")
+            
+            mensaje_confirmacion = (
+                f"✅ *¡Préstamo Confirmado!*\n\n"
+                f"Hola *{nombre}*, ya dimos de alta tu préstamo de {formato_moneda(monto)}.\n"
+                f"Tu primer vencimiento es el {(fecha_prestamo + timedelta(days=30)).strftime('%d/%m/%Y')}."
+            )
             url_confirmar = f"https://wa.me/{tel_destino}?text={mensaje_confirmacion.replace(' ', '%20').replace('\n', '%0A')}"
-            st.link_button("📱 Avisar Confirmación", url_confirmar)
+            st.link_button("📱 Avisar Confirmación por WhatsApp", url_confirmar)
+
+# ==========================================
+# SECCIÓN 2: AGENDA DE COBROS
+# ==========================================
+elif seccion == "📅 Agenda de Cobros":
+    st.header("Próximos Cobros")
+    filtro = st.radio("Ver cuotas:", ["Vencen Hoy", "Próximos 7 días", "Atrasadas (Mora)"], horizontal=True)
+    st.info("Esta sección se activará automáticamente al conectar la base de datos.")
+
+# ==========================================
+# SECCIÓN 3: CLIENTES Y PRÉSTAMOS
+# ==========================================
+elif seccion == "👤 Clientes y Préstamos":
+    st.header("Historial de Clientes")
+    buscar_cliente = st.text_input("🔍 Buscar cliente por nombre...")
+    st.info("Próximamente: Podrás ver el historial completo de cada cliente aquí.")
+
 
